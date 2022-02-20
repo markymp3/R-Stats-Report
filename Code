@@ -1,0 +1,86 @@
+library(tidyverse)
+
+
+df = SPL 
+ggplot(data = SPL, mapping = aes(x=, HomeGoals, y= AwayGoals)) + geom_point()
+
+
+homegoals = df[,c(4)]
+awaygoals = df[,c(5)]
+gaols= df[, (4),(5)]
+
+#Poisson Distribution
+
+xi<- data.matrix(homegoals)
+home_score=colSums(xi != 0)
+home_success = score/553
+
+
+away_score=colSums(yi != 0)
+away_success = score/553
+
+mean_x = mean(df[["HomeGoals"]])
+var_x = var(df[["AwayGoals"]])
+std_x = sqrt(var_x)
+
+lambda_y = mean(df[["AwayGoals"]])
+
+pois_pdf_x = dpois(xi, lambda_x)
+plot(xi, pois_pdf_x, type="h", lwd=3, col="blue", 
+     main="PDF of POIS(Xi) with Approximating Normal Density")
+abline(h=0, col="green2")
+curve(normden, from=0, to=8, add=TRUE, col="red")
+
+
+yi<- data.matrix(awaygoals)
+pois_pdf_y = dpois(yi, lambda_y)
+plot(yi, pois_pdf_y, type="h", lwd=3, col="purple", 
+     main="PDF of POIS(Yi) with Approximating Normal Density")
+abline(h=0, col="yellow1")
+curve(normden, from=0, to=8, add=TRUE, col="navy")
+
+
+
+# Negative Binomial 
+
+dnbinom(x=xi, size = 553, prob = success, log = FALSE)
+
+poo = dnbinom(x=xi, size = 553, mu = lambda_x, log = FALSE)
+
+plot(xi, poo, type="h", lwd=3, col="gold", 
+     main="Negative Binomial Home")
+abline(h=0, col="yellow1")
+curve(normden, from=0, to=8, add=TRUE, col="darkgreen")
+
+dnbinom(x=yi, size = 553, prob = success, log = FALSE)
+
+poop = dnbinom(x=yi, size = 553, mu = lambda_y, log = FALSE)
+
+plot(yi, poop, type="h", lwd=3, col="black", 
+     main="Negative Binomial Home")
+abline(h=0, col="black")
+curve(normden, from=0, to=8, add=TRUE, col="orange")
+
+ppois(q = xi, lambda = lambda_x, lower.tail = TRUE)
+
+prediction_home = 1-ppois(xi, lambda_x)
+
+homepred= dpois(x=xi, lambda = lambda_x)
+awaypred = dpois(x=yi, lambda = lambda_y)
+
+sum(awaypred)
+
+
+fx= dnbinom(x = xi, size=max_home, prob = home_success, log = FALSE )
+gy= dnbinom(x = yi, size=max_away, prob = away_success, log = FALSE )
+
+problem_matrix = array(dim = c(max_home, max_away))
+
+max_home = max(xi) +1 
+max_away = max(yi)+1
+
+for (homegoals in 0:(max_home-1)) {
+  for (awaygoals in 0:(max_away-1)){
+    problem_matrix[homegoals+1, awaygoals+1] = fx*gy
+  }
+}
